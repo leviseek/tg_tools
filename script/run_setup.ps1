@@ -17,13 +17,13 @@ Write-Host "Setting Beginning ...`n"
 
 # 配置 SGuardSvc64.exe
 Write-Host "[Setting SGuardSvc64.exe]" -ForegroundColor Yellow
-Start-Process -FilePath "$scriptDir\ProcessModifier.exe" -ArgumentList "SGuardSvc64.exe", "idle", "last4", "--eco" -Wait -NoNewWindow
+Start-Process -FilePath "$scriptDir\ProcessModifier.exe" -ArgumentList "SGuardSvc64.exe", "idle", "last3", "--eco" -Wait -NoNewWindow
 
 Write-Host ""
 
 # 配置 SGuard64.exe
 Write-Host "[Setting SGuard64.exe]" -ForegroundColor Yellow
-Start-Process -FilePath "$scriptDir\ProcessModifier.exe" -ArgumentList "SGuard64.exe", "idle", "last4", "--eco" -Wait -NoNewWindow
+Start-Process -FilePath "$scriptDir\ProcessModifier.exe" -ArgumentList "SGuard64.exe", "idle", "last3", "--eco" -Wait -NoNewWindow
 
 Write-Host "`nSetting Complete! Press any key to exit..." -ForegroundColor Green
 $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

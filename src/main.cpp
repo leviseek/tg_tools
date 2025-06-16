@@ -104,20 +104,26 @@ DWORD GetPriorityClassFromString(const std::string& priority) {
     return 0; // 无效值
 }
 
-// 计算最后4个核心的掩码
-DWORD_PTR GetLastFourCoresMask() {
+// 计算后三分之一核心的掩码
+DWORD_PTR GetLastThirdCoresMask() {
     SYSTEM_INFO sysInfo;
     GetSystemInfo(&sysInfo);
     
-    DWORD numCores = sysInfo.dwNumberOfProcessors;
-    if (numCores <= 4) {
-        // 如果系统核心数≤4，使用所有核心
-        return (1ULL << numCores) - 1;
+    DWORD totalCores = sysInfo.dwNumberOfProcessors;
+    if (totalCores <= 1) {
+        // 如果系统只有1个核心，使用所有核心
+        return 1;
     }
     
-    // 计算最后4个核心的掩码
+    // 计算最后三分之一的核心数量（向上取整）
+    DWORD lastThirdCount = (totalCores + 2) / 3; // 向上取整
+    if (lastThirdCount < 1) lastThirdCount = 1;
+    
+    // 计算最后三分之一核心的掩码
     DWORD_PTR mask = 0;
-    for (DWORD i = numCores - 4; i < numCores; i++) {
+    DWORD startIndex = totalCores - lastThirdCount;
+    
+    for (DWORD i = startIndex; i < totalCores; i++) {
         mask |= (1ULL << i);
     }
     
@@ -126,9 +132,9 @@ DWORD_PTR GetLastFourCoresMask() {
 
 // 解析掩码参数或特殊关键字
 DWORD_PTR ParseAffinityMask(const std::string& maskStr) {
-    // 特殊关键字：last4 - 使用最后4个核心
-    if (maskStr == "last4") {
-        return GetLastFourCoresMask();
+    // 特殊关键字：last3 - 使用后三分之一的核心
+    if (maskStr == "last3") {
+        return GetLastThirdCoresMask();
     }
     
     // 尝试解析十六进制
@@ -144,14 +150,14 @@ int main(int argc, char* argv[]) {
     // 检查参数
     if (argc < 4) {
         std::cout << "===================================" << std::endl;
-        std::cout << "用法: " << argv[0] << " <进程名> <优先级> <相关性掩码(十六进制或last4)> [--eco]\n"
+        std::cout << "用法: " << argv[0] << " <进程名> <优先级> <相关性掩码(十六进制或last3)> [--eco]\n"
                   << "优先级选项: idle, below, normal, above, high, realtime\n"
                   << "相关性掩码选项:\n"
                   << "  十六进制值 (如 0xF 表示前4个核心)\n"
-                  << "  last4 (使用系统的最后4个核心)\n\n"
+                  << "  last3 (使用系统的后三分之一核心)\n\n"
                   << "添加 --eco 参数启用效能模式\n\n"
-                  << "示例1: 使用最后4个核心\n"
-                  << "  ProcessModifier.exe chrome.exe idle last4 --eco\n\n"
+                  << "示例1: 使用后三分之一核心\n"
+                  << "  ProcessModifier.exe chrome.exe idle last3 --eco\n\n"
                   << "示例2: 使用特定核心\n"
                   << "  ProcessModifier.exe notepad.exe high 0xF\n";
         std::cout << "===================================" << std::endl;

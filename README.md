@@ -17,9 +17,9 @@ xmake config --mode=debug
 xmake build -v
 
 # 管理员运行
-.\ProcessModifier.exe SGuard64.exe idle last4 --eco
+.\ProcessModifier.exe SGuard64.exe idle last3 --eco
 
-.\ProcessModifier.exe SGuardSvc64.exe idle last4 --eco
+.\ProcessModifier.exe SGuardSvc64.exe idle last3 --eco
 
 ```
 
